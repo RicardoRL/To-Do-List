@@ -13,10 +13,12 @@ if(!$db->getConnectionStatus()){
   die("Error al conectarse a la base de datos");
 }
 
-// Se crea instancia de AuthController para gestionar la autenticación
+// Se crea instancia de AuthController para la autenticación
 $authController = new AuthController($db);
 
 if($_SERVER['REQUEST_METHOD'] === "POST"){
+  
+  // Obtención de parámetros
   $fullname = trim($_POST['fullname']);
   $username = trim($_POST['username']);
   $password = trim($_POST['password']);
@@ -24,33 +26,44 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 
   //Validaciones
   if(empty($fullname) || empty($username) || empty($password)){
-    die("Al menos un campo no ha sido capturado");
-  }
+    $error = [
+      "success" => false,
+      "message" => "Al menos un campo no ha sido capturado"
+    ];
+  }else if(strlen($username) < 5){
+    $error = [
+      "success" => false,
+      "message" => "El nombre de usuario debe tener al menos 5 caracteres"
+    ];
+  }else if(strlen($password) < 8){
+    $error = [
+      "success" => false,
+      "message" => "La contraseña debe tener al menos 8 caracteres"
+    ];
+  }else if($password != $password_repeat){
+    $error = [
+      "success" => false,
+      "message" => "Las contraseñas no coinciden, inténtalo nuevamente"
+    ];
+  }else{
 
-  if(strlen($username) < 5){
-    die("El nombre de usuario debe tener al menos 5 caracteres");
-  }
+    // Se intenta registrar el usuario cuando pasa las validaciones
+    $result = $authController->register($fullname, $username, $password);
+    $isRegistered = $result['success'];
 
-  if(strlen($password) < 8){
-    die("La contraseña debe tener al menos 8 caracteres");
-  }
+    // Si el registro es exitoso se procede a iniciar la sesión, caso contrario, muestra error.
+    if($isRegistered){
+      session_start();
+    
+      $newUserId = $db->lastInsertId();
 
-  if($password != $password_repeat){
-    die("Las contraseñas no coinciden, inténtalo nuevamente");
-  }
-
-  // Se procesa el registro de un nuevo usuario
-  $isRegistered = $authController->register($fullname, $username, $password);
-  //die($isRegistered);
-  if(!$isRegistered){
-    session_start();
-  
-    $newUserId = $db->lastInsertId();
-
-    $_SESSION['user_id'] = $newUserId;
-    $_SESSION['fullname'] = $fullname;
-    header('Location: dashboard.php');
-    exit;
+      $_SESSION['user_id'] = $newUserId;
+      $_SESSION['fullname'] = $fullname;
+      header('Location: dashboard.php');
+      exit;
+    }else{
+      $error = $result;
+    }
   }
 }
 

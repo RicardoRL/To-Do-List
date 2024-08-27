@@ -98,7 +98,7 @@
   </div>
 </div>
 
-<!-- Modal para editar tarea -->
+<!-- Modal para editar tareas -->
 <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -133,22 +133,27 @@
 </div>
 
 <script>
+//Script para cargar la información de la tarea en el modal correspondiente
+
 document.addEventListener('DOMContentLoaded', function() {
   var editTaskModal = document.getElementById('editTaskModal');
   editTaskModal.addEventListener('show.bs.modal', function (event) {
     var button = event.relatedTarget;
 
+    // Se obtienen los datos de la tarea seleccionada
     var taskId = button.getAttribute('data-bs-id');
     var taskTitle = button.getAttribute('data-bs-title');
     var taskDescription = button.getAttribute('data-bs-description');
     var taskStatus = button.getAttribute('data-bs-status');
 
+    // Se obtienen las entradas del formulario
     var modalTitle = editTaskModal.querySelector('.modal-title');
     var inputTaskId = editTaskModal.querySelector('#editTaskId');
     var inputTaskTitle = editTaskModal.querySelector('#editTaskTitle');
     var inputTaskDescription = editTaskModal.querySelector('#editTaskDescription');
     var inputTaskStatus = editTaskModal.querySelector('#editTaskStatus');
 
+    // Se carga la información obtenida en las entradas
     modalTitle.textContent = 'Editar tarea: ' + taskTitle;
     inputTaskId.value = taskId;
     inputTaskTitle.value = taskTitle;

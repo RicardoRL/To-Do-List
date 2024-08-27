@@ -1,3 +1,7 @@
+<?php
+  include __DIR__ . '/errores.php';
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>

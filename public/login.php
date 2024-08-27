@@ -18,14 +18,20 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
   //Validaciones
   if(empty($username) || empty($password)){
-    die("Al menos un campo no ha sido capturado");
-  }
-
-  if($authController->login($username, $password)){
-    header("Location: dashboard.php");
-    exit;
+    $error = [
+      "success" => false,
+      "message" => "Al menos un campo no ha sido capturado"
+    ];
   }else{
-    echo "<p>Nombre de usuario o contraseña incorrectos.</p>";
+    // Se intenta efectuar el login
+    $result = $authController->login($username, $password);
+    
+    if($result['success']){
+      header("Location: dashboard.php");
+      exit;
+    }else{
+      $error = $result;
+    }
   }
 }
 

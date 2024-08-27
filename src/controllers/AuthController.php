@@ -12,14 +12,23 @@ class AuthController{
 
   public function register($fullname, $username, $password){
     if($this->user->findUser($username)){
-      return true;
+      return [
+        'success' => false,
+        'message' => 'El nombre de usuario ya existe'
+      ];
     }
 
     if($this->user->create($fullname, $username, $password)){
-      return true;
+      return [
+        'success' => true,
+        'message' => 'Usuario registrado con éxito'
+      ];
     }
 
-    return false; //Si no se puede crear usuario retorna false
+    return [
+      'success' => false,
+      'message' => 'Error al registrar el usuario'
+    ];
   }
 
   public function login($username, $password){
@@ -29,10 +38,16 @@ class AuthController{
       $_SESSION['user_id'] = $user['id'];
       $_SESSION['username'] = $user['username'];
       $_SESSION['fullname'] = $user['fullname'];
-      return true;
+      return [
+        "success" => true,
+        "message" => "Acceso exitoso"
+      ];
     }
 
-    return false;
+    return [
+      "success" => false,
+      "message" => "Error al iniciar sesión"
+    ];
   }
 
   public function logout(){
